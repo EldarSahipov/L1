@@ -72,15 +72,15 @@ func main() {
 	go4.wg.Wait()
 
 	// Создание контекста и горутины для useTime с использованием context.
-	ctx, cancel = context.WithCancel(context.Background())
+	ctx, cancel = context.WithTimeout(context.Background(), time.Second*time.Duration(1))
 	go5 := Goroutine{wg: sync.WaitGroup{}}
 	ch = make(chan int, 1)
 	go5.wg.Add(2)
 	go writeValue(ctx, ch, &go5.wg)
-	go go5.useTime(ch)
+	go go5.useTime(ctx, ch)
 
 	// Отмена контекста и ожидание завершения горутины.
-	time.Sleep(1 * time.Second)
+	time.Sleep(2 * time.Second)
 	cancel()
 	close(ch)
 	go5.wg.Wait()
@@ -159,20 +159,17 @@ func (g *Goroutine) useSignal(ctx context.Context, ch chan int) {
 	}
 }
 
-// useTime - горутина, которая читает из канала до получения сигнала от таймера ticker.
-func (g *Goroutine) useTime(ch chan int) {
+// useTime - горутина, которая читает из канала до получения сигнала от таймера контекста.
+func (g *Goroutine) useTime(ctx context.Context, ch chan int) {
 	defer g.wg.Done()
-
-	ticker := time.NewTicker(time.Second * 1)
-	defer ticker.Stop()
 
 	for {
 		select {
-		case v := <-ch:
-			fmt.Println(v)
-		case <-ticker.C:
+		case <-ctx.Done():
 			fmt.Println("time!")
 			return
+		case v := <-ch:
+			fmt.Println(v)
 		}
 	}
 }
