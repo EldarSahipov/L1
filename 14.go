@@ -6,7 +6,8 @@ import (
 )
 
 func main() {
-	objects := []any{true, "a", make(chan int), 5, func() {}}
+	// Создаем срез значений разных типов.
+	objects := []interface{}{true, "a", make(chan int), 5, func() {}}
 
 	// 1 способ через пакет fmt. Под капотом он тоже использует reflect
 	for _, v := range objects {

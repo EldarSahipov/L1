@@ -34,7 +34,7 @@ func deleteElementByIndex2(s []int, index int) []int {
 	return append(s[:index], s[index+1:]...)
 }
 
-// del удаляет элемент из среза s по заданному индексу index,
+// deleteElementByIndex3 удаляет элемент из среза s по заданному индексу index,
 // создавая новый срез и копируя элементы
 func deleteElementByIndex3(s []int, index int) (slice []int) {
 	slice = make([]int, len(s)-1)
